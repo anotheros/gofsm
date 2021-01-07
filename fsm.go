@@ -6,6 +6,7 @@ import (
 	"qiniupkg.com/x/errors.v7"
 	"sort"
 	"strings"
+	"os/exec"
 )
 
 type State = string
@@ -323,8 +324,25 @@ func (sg *stateGraph) show() string {
 
 	// 输出 plantUml 和 在线生成图标地址
 	plantText := encode(raw)
-	imgUrl := "https://www.plantuml.com/plantuml/img/" + plantText
-	svgUrl := "https://www.plantuml.com/plantuml/svg/" + plantText
+	imgUrl := "https://www.plantuml.com/plantuml/img/~1" + plantText
+	svgUrl := "https://www.plantuml.com/plantuml/svg/~1" + plantText
 	format := "\nPlantUml Script:\n%s\n\nOnline Graph:\n\tImg: %s\n\tSvg: %s"
+	open(imgUrl)
 	return fmt.Sprintf(format, raw, imgUrl, svgUrl)
+}
+func open(url string) error {
+    var cmd string
+    var args []string
+
+    switch runtime.GOOS {
+    case "windows":
+        cmd = "cmd"
+        args = []string{"/c", "start"}
+    case "darwin":
+        cmd = "open"
+    default: // "linux", "freebsd", "openbsd", "netbsd"
+        cmd = "xdg-open"
+    }
+    args = append(args, url)
+    return exec.Command(cmd, args...).Start()
 }
