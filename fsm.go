@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strings"
 	"os/exec"
+	"runtime"
 )
 
 type State = string
