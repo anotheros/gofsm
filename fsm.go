@@ -3,15 +3,14 @@ package gofsm
 import (
 	"context"
 	"fmt"
-	"qiniupkg.com/x/errors.v7"
-	"sort"
-	"strings"
 	"os/exec"
+	"qiniupkg.com/x/errors.v7"
 	"runtime"
+	"strings"
 )
 
-type State = string
-type Event = string
+type State  string
+type Event  string
 type Action func(ctx context.Context, from State, event Event, to []State) (State, error)
 type StatesDef map[State]string
 type EventsDef map[Event]string
@@ -147,8 +146,8 @@ func (sm *stateMachine) Transitions(transitions ...Transition) *stateMachine {
 		if transfer, ok := events[newTransfer.Event]; ok {
 			transfer.To = append(transfer.To, newTransfer.To...)
 			// 去掉重复
-			sort.Strings(transfer.To)
-			transfer.To = removeDuplicatesAndEmpty(transfer.To)
+			//sort.Strings(transfer.To)
+			transfer.To = removeRepByMap(transfer.To)
 			events[newTransfer.Event] = transfer
 		} else {
 			events[newTransfer.Event] = newTransfer
@@ -157,6 +156,20 @@ func (sm *stateMachine) Transitions(transitions ...Transition) *stateMachine {
 	return sm
 }
 
+//slice去重
+func removeRepByMap(slc []State) []State {
+	result := []State{}         //存放返回的不重复切片
+	tempMap := map[State]byte{} // 存放不重复主键
+	for _, e := range slc {
+		l := len(tempMap)
+		tempMap[e] = 0 //当e存在于tempMap中时，再次添加是添加不进去的，，因为key不允许重复
+		//如果上一行添加成功，那么长度发生变化且此时元素一定不重复
+		if len(tempMap) != l { // 加入map后，map长度变化，则元素不重复
+			result = append(result, e) //当元素不重复时，将元素添加到切片result中
+		}
+	}
+	return result
+}
 func removeDuplicatesAndEmpty(a []State) (ret []State) {
 	aLen := len(a)
 	for i := 0; i < aLen; i++ {
@@ -173,10 +186,10 @@ func removeDuplicatesAndEmpty(a []State) (ret []State) {
 */
 func (sm *stateMachine) Trigger(ctx context.Context, from State, event Event) (State, error) {
 	if _, ok := sm.sg.states[from]; !ok {
-		return "", errors.New("状态机不包含状态" + from)
+		return "", errors.New(fmt.Sprintf("状态机不包含状态%s", from))
 	}
 	if _, ok := sm.sg.events[event]; !ok {
-		return "", errors.New("状态机不包含事件 " + event)
+		return "", errors.New(fmt.Sprintf("状态机不包含事件 " , event))
 	}
 	if transfer, ok := sm.sg.transitions[from][event]; ok {
 
@@ -268,22 +281,23 @@ func (sg *stateGraph) show() string {
 	// 处理中间状态转换
 	for from, events := range sg.transitions {
 		for event, transfer := range events {
+			eventString := fmt.Sprintf("%s",event)
 			if len(transfer.To) > 1 {
 				smType = "NFA"
 			}
-			if event != "" {
+			if eventString != "" {
 				desc := sg.events[event]
-				event = "(" + string(event) + ") "
+				eventString = "(" + eventString + ") "
 				if desc != "" {
-					event = event + desc
+					eventString = eventString + fmt.Sprintf("%s",desc)
 				}
 				if len(transfer.To) > 1 {
-					event = "<font color=red><b>" + event + "</b></font>"
+					eventString = "<font color=red><b>" + eventString + "</b></font>"
 				}
 			}
 			// plantUml 格式
-			if event != "" {
-				event = ": " + event
+			if eventString != "" {
+				eventString = ": " + eventString
 			}
 
 			for j := 0; j < len(transfer.To); j++ {
@@ -292,7 +306,7 @@ func (sg *stateGraph) show() string {
 					fmt.Sprintf("%s --> %s %s",
 						from,
 						to,
-						event))
+						eventString))
 			}
 		}
 	}
