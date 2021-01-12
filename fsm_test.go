@@ -170,11 +170,11 @@ func Test_stateMachine_Trigger(t *testing.T) {
 				Processor(tt.fields.processor)
 			got, err := sm.Trigger(tt.args.ctx, tt.args.from, tt.args.event)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("stateMachine.Trigger() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("StateMachine.Trigger() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("stateMachine.Trigger() = %v, want %v", got, tt.want)
+				t.Errorf("StateMachine.Trigger() = %v, want %v", got, tt.want)
 			}
 		})
 	}

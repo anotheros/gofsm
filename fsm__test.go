@@ -10,9 +10,9 @@ import (
 func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
-		want *stateMachine
+		want *StateMachine
 	}{
-		{"new", &stateMachine{processor: nil, sg: &stateGraph{transitions: map[State]map[Event]*Transition{}}}},
+		{"new", &StateMachine{processor: nil, sg: &stateGraph{transitions: map[State]map[Event]*Transition{}}}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -70,7 +70,7 @@ func Test_stateMachine_Show(t *testing.T) {
 				Transitions(tt.fields.transitions...)
 			println(sm.Show())
 			if got := sm.Show(); !strings.Contains(got, tt.want) {
-				t.Errorf("stateMachine.Show() = %v, want %v", got, tt.want)
+				t.Errorf("StateMachine.Show() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -83,10 +83,10 @@ func Test_stateMachine_States(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *stateMachine
+		want *StateMachine
 	}{
 		{"Empty", args{nil}, New("")},
-		{"Has States", args{StatesDef{"a": "a", "b": "b"}}, &stateMachine{
+		{"Has States", args{StatesDef{"a": "a", "b": "b"}}, &StateMachine{
 			sg: &stateGraph{
 				states:      StatesDef{"a": "a", "b": "b"},
 				transitions: map[State]map[Event]*Transition{},
@@ -96,7 +96,7 @@ func Test_stateMachine_States(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sm := New("")
 			if got := sm.States(tt.args.states); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("stateMachine.States() = %v, want %v", got, tt.want)
+				t.Errorf("StateMachine.States() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -110,10 +110,10 @@ func Test_stateMachine_Events(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *stateMachine
+		want *StateMachine
 	}{
 		{"Empty", args{nil}, New("")},
-		{"Has Events", args{EventsDef{"a": "a", "b": "b"}}, &stateMachine{
+		{"Has Events", args{EventsDef{"a": "a", "b": "b"}}, &StateMachine{
 			sg: &stateGraph{
 				events:      EventsDef{"a": "a", "b": "b"},
 				transitions: map[State]map[Event]*Transition{},
@@ -123,7 +123,7 @@ func Test_stateMachine_Events(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sm := New("")
 			if got := sm.Events(tt.args.events); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("stateMachine.Events() = %v, want %v", got, tt.want)
+				t.Errorf("StateMachine.Events() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -143,7 +143,7 @@ func Test_stateMachine_Transitions(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *stateMachine
+		want *StateMachine
 	}{
 		{"Empty", args{nil}, New("")},
 		{"Has Transitions", args{ts}, New("").Transitions(ts...)},
@@ -154,7 +154,7 @@ func Test_stateMachine_Transitions(t *testing.T) {
 			sm.Transitions(tt.args.transitions...)
 			println(fmt.Sprintf("%v", sm.sg.transitions))
 			if got := sm.Transitions(tt.args.transitions...); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("stateMachine.Transitions() = %v, want %v", got, tt.want)
+				t.Errorf("StateMachine.Transitions() = %v, want %v", got, tt.want)
 			}
 		})
 	}

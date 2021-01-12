@@ -45,7 +45,7 @@ type stateGraph struct {
 /**
 状态机
 */
-type stateMachine struct {
+type StateMachine struct {
 	processor EventProcessor
 	sg        *stateGraph
 }
@@ -88,8 +88,8 @@ var NoopProcessor = &DefaultProcessor{}
 /**
 创建一个状态机执行器
 */
-func New(name string) *stateMachine {
-	return (&stateMachine{
+func New(name string) *StateMachine {
+	return (&StateMachine{
 		sg: &stateGraph{
 			transitions: map[State]map[Event]*Transition{},
 		}}).Name(name)
@@ -98,7 +98,7 @@ func New(name string) *stateMachine {
 /**
 设置所有状态
 */
-func (sm *stateMachine) States(states StatesDef) *stateMachine {
+func (sm *StateMachine) States(states StatesDef) *StateMachine {
 	sm.sg.states = states
 	return sm
 }
@@ -106,27 +106,27 @@ func (sm *stateMachine) States(states StatesDef) *stateMachine {
 /**
 设置所有时间
 */
-func (sm *stateMachine) Events(events EventsDef) *stateMachine {
+func (sm *StateMachine) Events(events EventsDef) *StateMachine {
 	sm.sg.events = events
 	return sm
 }
 
-func (sm *stateMachine) Name(s string) *stateMachine {
+func (sm *StateMachine) Name(s string) *StateMachine {
 	sm.sg.name = s
 	return sm
 }
 
-func (sm *stateMachine) Start(start []State) *stateMachine {
+func (sm *StateMachine) Start(start []State) *StateMachine {
 	sm.sg.start = start
 	return sm
 }
 
-func (sm *stateMachine) End(end []State) *stateMachine {
+func (sm *StateMachine) End(end []State) *StateMachine {
 	sm.sg.end = end
 	return sm
 }
 
-func (sm *stateMachine) Processor(processor EventProcessor) *stateMachine {
+func (sm *StateMachine) Processor(processor EventProcessor) *StateMachine {
 	sm.processor = processor
 	return sm
 }
@@ -135,7 +135,7 @@ func (sm *stateMachine) Processor(processor EventProcessor) *stateMachine {
 添加状态转换
 TODO 不确定状态机，多个 Action 如何处理 ？？？
 */
-func (sm *stateMachine) Transitions(transitions ...Transition) *stateMachine {
+func (sm *StateMachine) Transitions(transitions ...Transition) *StateMachine {
 	for index := range transitions {
 		newTransfer := &transitions[index]
 		events, ok := sm.sg.transitions[newTransfer.From]
@@ -184,7 +184,7 @@ func removeDuplicatesAndEmpty(a []State) (ret []State) {
 /**
 触发状态转换
 */
-func (sm *stateMachine) Trigger(ctx context.Context, from State, event Event) (State, error) {
+func (sm *StateMachine) Trigger(ctx context.Context, from State, event Event) (State, error) {
 	if _, ok := sm.sg.states[from]; !ok {
 		return "", errors.New(fmt.Sprintf("状态机不包含状态%s", from))
 	}
@@ -225,7 +225,7 @@ func (sm *stateMachine) Trigger(ctx context.Context, from State, event Event) (S
 输出图的显示内容
 输出 PlantUML 显示 URL
 */
-func (sm *stateMachine) Show() string {
+func (sm *StateMachine) Show() string {
 	return sm.sg.show()
 }
 
