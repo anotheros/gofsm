@@ -1,4 +1,4 @@
-module github.com/LinuxCppServer/gofsm
+module github.com/anotheros/gofsm
 
 require (
 	github.com/threeq/goassert v0.0.1
