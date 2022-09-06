@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/threeq/gofaker"
-	"github.com/threeq/gofsm"
+	"github.com/anotheros/gofsm"
 	"reflect"
 	"strconv"
 	"testing"
